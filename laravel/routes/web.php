@@ -45,5 +45,13 @@ Route::resource('files', FileController::class);
 Route::get('/files/{file}/edit', [FileController::class, 'edit'])->name('files.edit');
 Route::put('/files/{file}', [FileController::class, 'update'])->name('files.update');
 
+Route::resource('files', FileController::class)
+->middleware(['auth', 'role:2']);
+
+/* Route::resource('files', FileController::class)
+->middleware(['auth', 'multirole.any:2,3']); */
+Route::resource('files', FileController::class)
+    ->middleware(['auth', 'multirole:2,3']);
+
 
 require __DIR__.'/auth.php';
