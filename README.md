@@ -14,6 +14,8 @@ Creacion del archivo **.env**:
 
     nano .env
 
+Código del ***.env***:
+
     APP_NAME=Laravel
     APP_ENV=local
     APP_KEY=base64:QSh0sW0vhZSrDMKDOPrnKAqAJKAPjO9eMsV34eo17G4=
