@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class RoleAnyMiddleware
+class EnsureUserHasMultirole
 {
     /**
      * Handle an incoming request.
@@ -21,12 +21,15 @@ class RoleAnyMiddleware
         $user = $request->user();
 
         foreach ($roles as $role) {
+            /* dd($user->role_id, $role); */ // Añadido para depurar
+           
+            dd((int)$role);
             if ($user->hasRole((int)$role)) {
                 return $next($request);
             }
         }
 
         $url = $request->url();
-        return redirect('home')->with('error', "Access denied to {$url}");
+        return redirect('dashboard')->with('error', "Access denied to {$url}");
     }
 }
