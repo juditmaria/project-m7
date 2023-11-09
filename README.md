@@ -80,4 +80,15 @@ Creacion del archivo **.env**:
     ADMIN_NAME=daw2_08
     ADMIN_EMAIL=2daw.equip08@fp.insjoaquimmir.cat
     ADMIN_PASSWORD=dKt49z441![*
-    
+
+Instalar e iniciar npm
+
+    npm install
+    npm run dev
+
+Enlazar las carpetas donde se guardan los archivos
+
+    php artisan storage:link 
+
+
+
