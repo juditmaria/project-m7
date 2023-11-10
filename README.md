@@ -10,11 +10,32 @@ Instala las **dependencias de Composer** que *no se incluyen en el control de ve
 
     php .././composer install
 
+Instalar e iniciar npm
+
+    npm install
+    npm audit fix
+    npm run dev
+
+Enlazar las carpetas donde se guardan los archivos
+
+    php artisan storage:link 
+
+En caso de usar sqlite habrá que crear en */laravel/database* el archivo *database.sqlite*. Con los comandos de migrate de php podremos hacer y desacer las tablas del proyecto.
+
+Comandos de migrate:
+  php artisan migrate:status
+  php artisan migrate
+  php artisan migrate:rollback
+  php artisan migrate:fresh
+
+Al iniciar el proyecto por primera vez ejecutaremos las migraciones para la creación de la base de datos:
+ **php artisan migrate**
+
 Creacion del archivo **.env**:
 
     nano .env
 
-Código del ***.env***:
+Ejemplo del código .env esperado:
 
     APP_NAME=Laravel
     APP_ENV=local
@@ -26,15 +47,15 @@ Código del ***.env***:
     LOG_DEPRECATIONS_CHANNEL=null
     LOG_LEVEL=debug
     
-    # DB_CONNECTION=sqlite
-    # DB_DATABASE=../database/database.sqlite
+    DB_CONNECTION=sqlite  
+    DB_DATABASE=../database/database.sqlite
     
-    DB_CONNECTION=mysql
-    DB_HOST=hl1216.dinaserver.com
-    DB_PORT=3306
-    DB_DATABASE=daw2_08
-    DB_USERNAME=daw2_08
-    DB_PASSWORD=dKt49z441![*
+    # DB_CONNECTION=mysql
+    # DB_HOST=**host**
+    # DB_PORT=3306
+    # DB_DATABASE=**username**
+    # DB_USERNAME=**username**
+    # DB_PASSWORD=**password**
     
     BROADCAST_DRIVER=log
     CACHE_DRIVER=file
@@ -52,10 +73,10 @@ Código del ***.env***:
     MAIL_MAILER=smtp
     MAIL_HOST=smtp.gmail.com
     MAIL_PORT=587
-    MAIL_USERNAME=2daw.equip08@fp.insjoaquimmir.cat
-    MAIL_PASSWORD=dKt49z441![*
+    MAIL_USERNAME=**mail**
+    MAIL_PASSWORD=**password**
     MAIL_ENCRYPTION=tls
-    MAIL_FROM_ADDRESS=2daw.equip08@fp.insjoaquimmir.cat
+    MAIL_FROM_ADDRESS=**mail**
     MAIL_FROM_NAME="${APP_NAME}"
     
     AWS_ACCESS_KEY_ID=
@@ -79,18 +100,16 @@ Código del ***.env***:
     VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
     VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
     
-    ADMIN_NAME=daw2_08
-    ADMIN_EMAIL=2daw.equip08@fp.insjoaquimmir.cat
-    ADMIN_PASSWORD=dKt49z441![*
+    ADMIN_NAME=**username**
+    ADMIN_EMAIL=**mail**
+    ADMIN_PASSWORD=**password**
 
-Instalar e iniciar npm
+Configuración de */laravel/config/database.php* para forzar a usar la ruta "../database/database.sqlite" para conectar con la base de datos:
 
-    npm install
-    npm run dev
-
-Enlazar las carpetas donde se guardan los archivos
-
-    php artisan storage:link 
-
-
-
+    'sqlite' => [
+                'driver' => 'sqlite',
+                'url' => env('DATABASE_URL'),
+                'database' => env('DB_CONNECTION') === 'sqlite' ? database_path(env('DB_DATABASE', 'database.sqlite')) : env('DB_DATABASE', database_path('database.sqlite')),
+                'prefix' => '',
+                'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+            ],
