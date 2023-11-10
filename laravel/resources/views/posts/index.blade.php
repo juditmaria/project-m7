@@ -22,16 +22,18 @@
                           </tr>
                       </thead>
                       <tbody>
-                        <h1>List of Files</h1>
-                          @foreach ($files as $file)
-                          <tr>
-                              <td>{{ $file->id }}</td>
-                              <td>{{ $file->filepath }}</td>
-                              <td>{{ $file->filesize }}</td>
-                              <td>{{ $file->created_at }}</td>
-                              <td>{{ $file->updated_at }}</td>
-                          </tr>
-                          @endforeach
+                        <h1>List of Posts</h1>
+                        @foreach($posts as $post)
+                            <div>
+                                <h2>{{ $post->id }}</h2>
+                                <p>{{ $post->body }}</p>
+                                <p>Latitude: {{ $post->latitude }}</p>
+                                <p>Longitude: {{ $post->longitude }}</p>
+                                <p>Author: {{ $post->user->name }}</p>
+                                <p>File: {{ $post->file->filename }}</p>
+                            </div>
+                            <hr>
+                        @endforeach
                       </tbody>
                   </table>
                </div>

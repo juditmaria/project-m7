@@ -4,6 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+use Database\Seeders\RoleSeeder;
+use Database\Seeders\UserSeeder;
+
 return new class extends Migration
 {
     /**
@@ -11,18 +14,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('roles')) {
+            Schema::create('roles', function (Blueprint $table) {
+                $table->id();
+                $table->string('name')->unique();
+                $table->timestamps();
+            });
+        }
 
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('role_id')->nullable();
             $table->foreign("role_id")->references("id")->on("roles")->onUpdate("cascade")->onDelete("set null");
         });
 
-        Artisan::call('db:seed', [
+        /* Artisan::call('db:seed', [
             '--class' => 'RoleSeeder',
             '--force' => true
          ]);
@@ -30,7 +35,13 @@ return new class extends Migration
          Artisan::call('db:seed', [
             '--class' => 'UserSeeder',
             '--force' => true
-         ]);
+         ]); */
+         
+         $seeder = new RoleSeeder();
+         $seeder->run();
+
+         $seeder = new UserSeeder();
+         $seeder->run();
     }
 
     /**

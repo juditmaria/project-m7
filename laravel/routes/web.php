@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,13 @@ Route::resource('files', FileController::class)
 ->middleware(['auth', 'multirole.any:2,3']); */
 /* Route::resource('files', FileController::class)
     ->middleware(['auth', 'multirole:1,3']); */
+
+ //Rutas de Post
+Route::get('/create', [PostController::class, 'create'])->name('create');
+Route::post('/posts/store', [PostController::class, 'store'])->name('posts.store');
+//Métodos de vistas de Post
+Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
 
 
 require __DIR__.'/auth.php';

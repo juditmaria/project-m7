@@ -17,6 +17,6 @@ class RoleSeeder extends Seeder
             ["name" => "author"],
             ["name" => "editor"],
             ["name" => "admin"],
-        ]);hese credentials do not match our records.hese credentials do not match our records.hese credentials do not match our records.hese credentials do not match our records.
+        ]);
     }
 }

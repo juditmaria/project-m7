@@ -151,8 +151,20 @@ class FileController extends Controller
         // Eliminar el registro de la base de datos
         $file->delete();
     
-        // Reiniciar la secuencia de ID (autoincrement) en la base de datos
-        DB::statement("ALTER TABLE {$tableName} AUTO_INCREMENT = 1");
+        
+/*         // Reiniciar la secuencia de ID (autoincrement) en la base de datos
+        DB::statement("ALTER TABLE {$tableName} AUTO_INCREMENT = 1"); */
+/* 
+        $databaseDriver = config('database.default');
+
+        $tableName = 'files'; // Reemplaza con el nombre de tu tabla
+    
+        // Verifica el driver y ejecuta el comando correspondiente
+        if ($databaseDriver === 'mysql') {
+            DB::statement("ALTER TABLE {$tableName} AUTO_INCREMENT = 1");
+        } elseif ($databaseDriver === 'sqlite') {
+            DB::statement("UPDATE sqlite_sequence SET seq = 1 WHERE name = '{$tableName}'");
+        } */
     
         return redirect()->route('files.index')->with('success', 'Archivo eliminado exitosamente.');
     }    

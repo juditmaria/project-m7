@@ -3,8 +3,11 @@
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Dashboard') }}
         </h2>
-        <h2>{{ __('Resources') }}</h2>
-        <a href="{{ url('/files') }}">{{ __('Files') }}</a>
+        <h2><span style="color:#AB0B0E;font-weight:bold;">{{ __('Resources') }}</span></h2>
+        <ol>
+            <li><a href="{{ url('/files') }}">{{ __('Files') }}</a></li>
+            <li><a href="{{ url('/posts') }}">{{ __('Posts') }}</a></li>
+        </ol>
     </x-slot>
 
     <div class="py-12">

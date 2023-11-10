@@ -52,4 +52,12 @@ class User extends Authenticatable
         return count(array_intersect($userRoles, $roles)) > 0;
     } */
 
+    /**
+     *  Model relacionat entre el model Post y User (1:N)
+     */
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'author_id');
+    }
+
 }
