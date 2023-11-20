@@ -21,7 +21,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role_id',
     ];
 
     /**
@@ -43,13 +42,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-
-    // Multirole
-    /* public function hasRole($roles)
-    {
-        $userRoles = (array)$this->role_id;
-
-        return count(array_intersect($userRoles, $roles)) > 0;
-    } */
-
 }

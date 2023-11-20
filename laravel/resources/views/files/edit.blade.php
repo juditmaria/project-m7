@@ -1,27 +1,34 @@
-<div class="container">
-    <h1>Editar Archivo</h1>
-    <form action="{{ route('files.update', $file->id) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        @method('PUT')
+@extends('layouts.box-app')
 
-        <div class="form-group">
-            <label for="upload">Seleccionar Archivo</label>
-            <input type="file" name="upload" id="upload" class="form-control" onchange="updateFileSize(this)">
-        </div>
+@section('box-title')
+    {{ __('File') . " " . $file->id }}
+@endsection
 
-        <div class="form-group">
-            <label for="filesize">Tamaño del archivo (bytes)</label>
-            <input type="text" name="filesize" id="filesize" class="form-control" value="{{ $file->filesize }}">
-        </div>
-
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-    </form>
-</div>
-
-<script>
-function updateFileSize(input) {
-    const selectedFile = input.files[0];
-    const fileSize = selectedFile.size; // Tamaño del archivo en bytes
-    document.getElementById('filesize').value = fileSize; // Actualiza el campo de texto con el tamaño en bytes
-}
-</script>
+@section('box-content')
+<x-columns columns=2>
+    @section('column-1')
+        <img class="w-full" src="{{ asset('storage/'.$file->filepath) }}" title="Image preview"/>
+    @endsection
+    @section('column-2')
+        <form method="POST" action="{{ route('files.update', $file) }}" enctype="multipart/form-data">
+            @csrf
+            @method("PUT")
+            <div>
+                <x-input-label for="upload" :value="__('Upload')" />
+                <x-text-input type="file" name="upload" id="upload" class="block mt-1 w-full" />
+            </div>
+            <div class="mt-8">
+                <x-primary-button>
+                    {{ __('Update') }}
+                </x-primary-button>
+                <x-secondary-button type="reset">
+                    {{ __('Reset') }}
+                </x-secondary-button>
+                <x-secondary-button href="{{ route('files.index') }}">
+                    {{ __('Back to list') }}
+                </x-secondary-button>
+            </div>
+        </form>
+    @endsection
+</x-columns>
+@endsection

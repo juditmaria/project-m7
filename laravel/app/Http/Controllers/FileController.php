@@ -4,23 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\File;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FileController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
         return view("files.index", [
-            "files" => File::all()
-        ]); 
+            'files' => File::all()
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -29,132 +32,113 @@ class FileController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-   {
-       // Validar fitxer
-       $validatedData = $request->validate([
-           'upload' => 'required|mimes:gif,jpeg,jpg,png|max:1024'
-       ]);
-      
-       // Obtenir dades del fitxer
-       $upload = $request->file('upload');
-       $fileName = $upload->getClientOriginalName();
-       $fileSize = $upload->getSize();
-       \Log::debug("Storing file '{$fileName}' ($fileSize)...");
+    {
+        // Validar fitxer
+        $validatedData = $request->validate([
+            'upload' => 'required|mimes:gif,jpeg,jpg,png|max:2048'
+        ]);
 
+        // Desar fitxer al disc i inserir dades a BD
+        $upload = $request->file('upload');
+        $file = new File();
+        $ok = $file->diskSave($upload);
 
-       // Pujar fitxer al disc dur
-       $uploadName = time() . '_' . $fileName;
-       $filePath = $upload->storeAs(
-           'uploads',      // Path
-           $uploadName ,   // Filename
-           'public'        // Disk
-       );
-      
-       if (\Storage::disk('public')->exists($filePath)) {
-           \Log::debug("Disk storage OK");
-           $fullPath = \Storage::disk('public')->path($filePath);
-           \Log::debug("File saved at {$fullPath}");
-           // Desar dades a BD
-           $file = File::create([
-               'filepath' => $filePath,
-               'filesize' => $fileSize,
-           ]);
-           \Log::debug("DB storage OK");
-           // Patró PRG amb missatge d'èxit
-           return redirect()->route('files.show', $file)
-               ->with('success', 'File successfully saved');
-       } else {
-           \Log::debug("Disk storage FAILS");
-           // Patró PRG amb missatge d'error
-           return redirect()->route("files.create")
-               ->with('error', 'ERROR uploading file');
-       }
-   }
-
+        if ($ok) {
+            // Patró PRG amb missatge d'èxit
+            return redirect()->route('files.show', $file)
+                ->with('success', __('File successfully saved'));
+        } else {
+            // Patró PRG amb missatge d'error
+            return redirect()->route("files.create")
+                ->with('error', __('ERROR uploading file'));
+        }
+    }
 
     /**
      * Display the specified resource.
+     *
+     * @param  \App\Models\File  $file
+     * @return \Illuminate\Http\Response
      */
-    public function show($id)
-{
-    $file = File::find($id);
-
-    if (!$file) {
-        return redirect()->route('files.index')->with('error', 'El archivo no existe.');
+    public function show(File $file)
+    {
+        return view("files.show", [
+            'file' => $file
+        ]);
     }
-
-    $filePath = storage_path("app/public/{$file->filepath}");
-
-    if (!Storage::exists("public/{$file->filepath}") || !file_exists($filePath)) {
-        return redirect()->route('files.index')->with('error', 'El archivo no se encuentra en el disco.');
-    }
-
-    return view('files.show', compact('file'));
-}
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\File  $file
+     * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(File $file)
     {
-        $file = File::find($id);
-
-        if (!$file) {
-            return redirect()->route('files.index')->with('error', 'El archivo no existe.');
-        }
-
-        return view('files.edit', compact('file'));
+        return view("files.edit", [
+            'file' => $file
+        ]);
     }
-
-
+    
     /**
      * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\File  $file
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, File $file)
     {
-        $request->validate([
-            'upload' => 'required|file',
+        // Validar fitxer
+        $validatedData = $request->validate([
+            'upload' => 'required|mimes:gif,jpeg,jpg,png|max:2048'
         ]);
-    
-        if ($request->hasFile('upload')) {
-            $uploadedFile = $request->file('upload');
-            $fileName = 'uploads/' . $uploadedFile->getClientOriginalName();
-            $uploadedFile->storeAs('', $fileName, 'public');
-    
-            $file->filepath = $fileName;
-            $file->filesize = $uploadedFile->getSize(); // Actualiza el campo filesize con el nuevo tamaño en bytes
-            $file->save();
+
+        // Desar fitxer al disc i actualitzar dades a BD
+        $upload = $request->file('upload');
+        $ok = $file->diskSave($upload);
+
+        if ($ok) {
+            // Patró PRG amb missatge d'èxit
+            return redirect()->route('files.show', $file)
+                ->with('success', __('File successfully saved'));
+        } else {
+            // Patró PRG amb missatge d'error
+            return redirect()->route("files.edit")
+                ->with('error', __('ERROR uploading file'));
         }
-    
-        return redirect()->route('files.show', $file)->with('success', 'Archivo actualizado exitosamente.');
     }
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\File  $file
+     * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(File $file)
     {
-        $file = File::find($id);
+        // Eliminar fitxer del disc i BD
+        $file->diskDelete();
+        // Patró PRG amb missatge d'èxit
+        return redirect()->route("files.index")
+            ->with('success', __("File succesfully deleted."));
+    }
     
-        if (!$file) {
-            return redirect()->route('files.index')->with('error', 'El archivo no existe.');
-        }
-    
-        // Eliminar el archivo del sistema de archivos
-        Storage::delete("public/{$file->filepath}");
-    
-        // Obtener el nombre de la tabla
-        $tableName = $file->getTable();
-    
-        // Eliminar el registro de la base de datos
-        $file->delete();
-    
-        // Reiniciar la secuencia de ID (autoincrement) en la base de datos
-        DB::statement("ALTER TABLE {$tableName} AUTO_INCREMENT = 1");
-    
-        return redirect()->route('files.index')->with('success', 'Archivo eliminado exitosamente.');
-    }    
-
+    /**
+     * Confirm specified resource deletion from storage.
+     *
+     * @param  \App\Models\File  $file
+     * @return \Illuminate\Http\Response
+     */
+    public function delete(File $file)
+    {
+        return view("files.delete", [
+            'file' => $file
+        ]);
+    }
 }
